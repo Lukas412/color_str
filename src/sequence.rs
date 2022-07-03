@@ -28,7 +28,7 @@ impl<I: Iterator<Item=Block>> ColorIterator<I> {
 
 impl<I: Iterator<Item=Block>> ColorIterator<I> {
   fn next_from_current_block_iterator(&mut self) -> Option<Color> {
-    self.current_block_iterator.as_mut().and_then(|iterator: &mut BlockIterator| iterator.next())
+    self.current_block_iterator.as_mut().and_then(BlockIterator::next)
   }
 
   fn next_with_next_block_iterator(&mut self) -> Option<Color> {
