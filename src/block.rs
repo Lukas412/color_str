@@ -1,7 +1,18 @@
 use crate::color::Color;
 
 pub enum Block {
+  None,
   Color(Color)
+}
+
+impl Block {
+  pub fn new_none() -> Self {
+    Self::None
+  }
+
+  pub fn new_color(color: Color) -> Self {
+    Self::Color(color)
+  }
 }
 
 impl IntoIterator for Block {
@@ -10,6 +21,7 @@ impl IntoIterator for Block {
 
   fn into_iter(self) -> Self::IntoIter {
     match self {
+      Block::None => Self::IntoIter::new_none(),
       Block::Color(color) => Self::IntoIter::new_color(color)
     }
   }
@@ -20,6 +32,11 @@ pub struct BlockIterator {
 }
 
 impl BlockIterator {
+  fn new_none() -> Self {
+    let state = BlockIteratorState::None;
+    Self { state }
+  }
+
   fn new_color(color: Color) -> Self {
     let state = BlockIteratorState::Color(color);
     Self { state }
