@@ -1,3 +1,5 @@
+pub mod to_str;
+
 #[cfg(test)]
 mod tests {
     #[test]
