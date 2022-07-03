@@ -15,21 +15,25 @@ impl IntoIterator for Block {
   }
 }
 
-pub enum BlockIterator {
-  Color(Option<Color>)
+pub struct BlockIterator {
+  state: BlockIteratorState
 }
 
 impl Iterator for BlockIterator {
   type Item = Color;
 
   fn next(&mut self) -> Option<Self::Item> {
-    match self {
-      BlockIterator::Color(Some(color)) => {
-        let color = color.clone();
-        self.0 = None;
-        Some(color)
+    match &self.state {
+      BlockIteratorState::None => None,
+      BlockIteratorState::Color(color) => {
+        self.state = BlockIteratorState::None;
+        Some(color.clone())
       },
-      BlockIterator::Color(None) => None
     }
   }
+}
+
+pub enum BlockIteratorState {
+  None,
+  Color(Color)
 }

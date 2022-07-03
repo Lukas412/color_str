@@ -3,17 +3,13 @@ use std::vec::IntoIter;
 
 use crate::block::{Block, BlockIterator};
 use crate::color::Color;
-use crate::iterator::ColorIterator;
 
 pub struct ColorSequence {
   blocks: Vec<Block>,
 }
 
-impl IntoIterator for ColorSequence {
-  type Item = Block;
-  type IntoIter = ColorIterator<IntoIter<Self::Item>>;
-
-  fn into_iter(self) -> Self::IntoIter {
+impl ColorSequence {
+  fn into_iter(self) -> ColorIterator<IntoIter<Block>> {
     let blocks_iterator = self.blocks.into_iter();
     ColorIterator::new(blocks_iterator)
   }
@@ -49,7 +45,7 @@ impl<I: Iterator<Item=Block>> Iterator for ColorIterator<I> {
   type Item = Color;
 
   fn next(&mut self) -> Option<Self::Item> {
-    let next = self.current_block_iterator.map(BlockIterator::next);
-    next.or_else(ColorIterator::next_with_next_block_iterator)
+    let next = self.current_block_iterator.map_or(None, |mut iterator| iterator.next());
+    next.or_else(|| self.next_with_next_block_iterator())
   }
 }
