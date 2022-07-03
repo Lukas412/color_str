@@ -1,4 +1,3 @@
-use std::rc::Rc;
 use std::vec::IntoIter;
 
 use crate::block::{Block, BlockIterator};
@@ -28,6 +27,10 @@ impl<I: Iterator<Item=Block>> ColorIterator<I> {
 }
 
 impl<I: Iterator<Item=Block>> ColorIterator<I> {
+  fn next_from_current_block_iterator(&mut self) -> Option<Color> {
+    self.current_block_iterator.as_mut().and_then(|iterator: &mut BlockIterator| iterator.next())
+  }
+
   fn next_with_next_block_iterator(&mut self) -> Option<Color> {
     self.next_block_iterator().and_then(|next_block_iterator| {
       self.current_block_iterator = Some(next_block_iterator);
@@ -45,7 +48,6 @@ impl<I: Iterator<Item=Block>> Iterator for ColorIterator<I> {
   type Item = Color;
 
   fn next(&mut self) -> Option<Self::Item> {
-    let next = self.current_block_iterator.map_or(None, |mut iterator| iterator.next());
-    next.or_else(|| self.next_with_next_block_iterator())
+    self.next_from_current_block_iterator().or_else(|| self.next_with_next_block_iterator())
   }
 }
