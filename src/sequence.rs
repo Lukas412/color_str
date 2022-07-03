@@ -6,7 +6,7 @@ use crate::color::Color;
 use crate::iterator::ColorIterator;
 
 pub struct ColorSequence {
-  sequence: Vec<Block>,
+  blocks: Vec<Block>,
 }
 
 impl IntoIterator for ColorSequence {
@@ -14,20 +14,20 @@ impl IntoIterator for ColorSequence {
   type IntoIter = ColorIterator<IntoIter<Self::Item>>;
 
   fn into_iter(self) -> Self::IntoIter {
-    let iterator = self.sequence.into_iter();
-    ColorIterator::new(iterator)
+    let blocks_iterator = self.blocks.into_iter();
+    ColorIterator::new(blocks_iterator)
   }
 }
 
 pub struct ColorIterator<I: Iterator<Item=Block>> {
-  blocks: I,
+  blocks_iterator: I,
   current_block_iterator: Option<BlockIterator>,
 }
 
 impl<I: Iterator<Item=Block>> ColorIterator<I> {
-  pub fn new(blocks: I) -> Self {
-    let current = None;
-    Self { blocks, current_block_iterator: current }
+  pub fn new(blocks_iterator: I) -> Self {
+    let current_block_iterator = None;
+    Self { blocks_iterator, current_block_iterator }
   }
 }
 
@@ -40,7 +40,7 @@ impl<I: Iterator<Item=Block>> ColorIterator<I> {
   }
 
   fn next_block_iterator(&mut self) -> Option<BlockIterator> {
-    let next_block = self.blocks.next();
+    let next_block = self.blocks_iterator.next();
     next_block.map(Block::into_iter)
   }
 }
@@ -49,7 +49,7 @@ impl<I: Iterator<Item=Block>> Iterator for ColorIterator<I> {
   type Item = Color;
 
   fn next(&mut self) -> Option<Self::Item> {
-    let next_color = self.current_block_iterator.map(BlockIterator::next);
-    next_color.or_else(ColorIterator::next_with_next_block_iterator)
+    let next = self.current_block_iterator.map(BlockIterator::next);
+    next.or_else(ColorIterator::next_with_next_block_iterator)
   }
 }
