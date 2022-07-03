@@ -1,3 +1,4 @@
 pub mod block;
 pub mod color;
-mod sequence;
+pub mod sequence;
+pub mod iterator;
